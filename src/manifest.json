@@ -1,0 +1,13 @@
+{
+  "name": "angular-chrome-extension",
+  "version": "1.0",
+  "description": "construindo uma extensão com angular",
+  "manifest_version": 2,
+  "permissions": ["activeTab", "tabs", "webNavigation"],
+  "page_action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": ["background.js", "runtime.js"]
+  }
+}

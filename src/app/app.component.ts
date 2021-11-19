@@ -6,5 +6,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'watch-video-group-extension-angular';
+
+  printMessage() {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const id = tabs[0].id;
+      if (id == null) return;
+      chrome.tabs.executeScript(id, {
+        code: 'console.log(\'ola\')',
+      });
+    });
+  }
 }
