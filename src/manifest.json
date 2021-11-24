@@ -2,12 +2,32 @@
   "name": "angular-chrome-extension",
   "version": "1.0",
   "description": "construindo uma extensão com angular",
-  "manifest_version": 2,
-  "permissions": ["activeTab", "tabs", "webNavigation"],
-  "page_action": {
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "webNavigation",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
     "default_popup": "index.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
   "background": {
-    "scripts": ["background.js", "runtime.js"]
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self' "
   }
 }

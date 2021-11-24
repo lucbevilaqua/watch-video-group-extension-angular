@@ -1,2 +1,4 @@
-Funcionou a extensão
-<button (click)="printMessage()">Printar mensagem na pagina</button>
+<input type="text" [disabled]="hasActiveRoom" [(ngModel)]="roomId">
+
+<button (click)="getRoom()">Entrar na sala</button>
+<button (click)="createRoom()">Criar Sala</button>

@@ -4,8 +4,11 @@ import config from './custom-webpack.config';
 const options = {
   reloadPage: true,
   entries: {
-    background: 'background',
+    background: 'background'
   },
+  optimization: {
+    runtimeChunk: false
+  }
 };
 
 export default {

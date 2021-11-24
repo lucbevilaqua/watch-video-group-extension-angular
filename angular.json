@@ -30,7 +30,8 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.json"
+              "src/manifest.json",
+              "src/content.js"
             ],
             "styles": [
               "src/styles.scss"
@@ -44,6 +45,11 @@
             "dev": {
               "customWebpackConfig": {
                 "path": "./custom-webpack-dev.config.ts"
+              }
+            },
+            "prod": {
+              "customWebpackConfig": {
+                "path": "./custom-webpack.config.ts"
               }
             },
             "production": {

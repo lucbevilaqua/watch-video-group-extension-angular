@@ -3,7 +3,16 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebase: {
+    apiKey: "AIzaSyBop1-nlT4Un7lznadDUPGem8jk3rJvn7Y",
+    authDomain: "watch-video-group.firebaseapp.com",
+    databaseURL: "https://watch-video-group-default-rtdb.firebaseio.com/",
+    projectId: "watch-video-group",
+    storageBucket: "watch-video-group.appspot.com",
+    messagingSenderId: "736680584207",
+    appId: "1:736680584207:web:38eadb9934dc24d3556f7a",
+  }
 };
 
 /*
