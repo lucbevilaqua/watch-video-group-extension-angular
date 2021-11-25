@@ -1,20 +1,12 @@
-import { DOMMessage, DOMMessageResponse, ChromeApiService } from "./app/services/chrome-api.service";
+import { DOMMessage } from "./app/services/chrome-api.service";
+import { FirebaseService } from "./app/services/firebase.service";
 
-const chromeApiService = new ChromeApiService();
-
-const play = () => {
-  document.querySelector('video')?.play();
-}
-
-const pause = () => {
-  document.querySelector('video')?.pause();
-}
-
+// Valida a aba do usuario para exibir o popup
 const validShowExtensionInPage = () => {
   chrome.webNavigation.onCompleted.addListener(
     () => {
       chrome.tabs.query({ active: true, currentWindow: true }, ([{ id }]) => {
-        if (id == null) return;
+        if (id == null || id === undefined) return;
         chrome.pageAction.show(id);
       });
     },
@@ -24,26 +16,27 @@ const validShowExtensionInPage = () => {
 
 chrome.runtime.onInstalled.addListener(validShowExtensionInPage);
 
-const messagesFromAngularAppListener = (msg: DOMMessage, sender: chrome.runtime.MessageSender, sendResponse: (response: DOMMessageResponse) => void) => {
+const firebaseService = new FirebaseService();
+// Mensagens enviadas do content.js
+const messagesFromContentAppListener = (msg: DOMMessage) => {
   if (msg.command === 'pause'){
-
-    // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    //   const id = tabs[0].id;
-    //   if (id == null) return;
-    //   chrome.scripting.executeScript({
-    //     target: { tabId: id },
-    //     func: pause
-    //   }, () => {});
-    // });
-    chromeApiService.executeScript(pause);
-    sendResponse({type: 'result', status: 'success', data: null, request: msg });
+    firebaseService.updateRoom('str1', { roomId: 'str1', pause: true });
   } else if (msg.command === 'play') {
-    chromeApiService.executeScript(play);
-
-    sendResponse({type: 'result', status: 'success', data: null, request: msg });
+    firebaseService.updateRoom('str1', { roomId: 'str1', pause: false });
   }
-
-  return true;
 }
 
-chrome.runtime.onMessage.addListener(messagesFromAngularAppListener);
+var portFromContent: chrome.runtime.Port;
+
+function connected(p: chrome.runtime.Port) {
+  portFromContent = p;
+  portFromContent.onMessage.addListener(messagesFromContentAppListener);
+
+  firebaseService.observableRoom('str1', (snapshot) => {
+    const data = snapshot.val();
+    portFromContent.postMessage({ command: 'updateVideo', data });
+  });
+}
+
+chrome.runtime.onConnect.addListener(connected);
+

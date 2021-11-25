@@ -16,7 +16,7 @@ export class AppComponent {
 
   createRoom() {
     this.chromeApi.roomId = (Math.random() + 1).toString(36).substring(7);
-    this.chromeApi.setInStorage({ roomId: this.chromeApi.roomId });
+    // this.chromeApi.setInStorage({ roomId: this.chromeApi.roomId });
 
     this.itemRef = this.db.object(this.chromeApi.roomId);
     this.itemRef.set({ pause: true, link: window.location.href });

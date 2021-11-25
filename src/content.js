@@ -1,14 +1,27 @@
-document.querySelector('video').addEventListener('pause', () => {
-  chrome.runtime.sendMessage(
-    { command: 'pause' },
-    () => { }
-  );
-})
+// window.addEventListener('load', function(event) {
+//   this.setTimeout(() => {
+//     console.log('vai lançar o put');
+//     chrome.runtime.sendMessage(
+//       { command: 'put' },
+//       () => {
+//         console.log('finalizou o put')
+//       }
+//     );
+//   })
+// });
 
-document.querySelector('video').addEventListener('play', () => {
-  chrome.runtime.sendMessage(
-    { command: 'play' },
-    () => { }
-  );
-})
+var myPort = chrome.runtime.connect({ name: 'port-from-cs' });
 
+document.querySelector('video').addEventListener('pause', () => myPort.postMessage({ command: 'pause' }));
+
+document.querySelector('video').addEventListener('play', () => myPort.postMessage({ command: 'play' }));
+
+myPort.onMessage.addListener((msg) => {
+  if (msg.command === 'updateVideo') {
+    if (msg.data?.pause) {
+      document.querySelector('video')?.pause();
+    } else {
+      document.querySelector('video')?.play()
+    }
+  }
+});

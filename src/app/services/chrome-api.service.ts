@@ -22,23 +22,16 @@ export class ChromeApiService {
   constructor() { }
 
   sendMessage(msg: DOMMessage, callback: (response: DOMMessageResponse) => void) {
-    chrome.tabs && chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, tabs => {
-      chrome.tabs.sendMessage(
-        tabs[0].id || 0,
-        msg,
-        callback
-      );
-    });
+    chrome.runtime.sendMessage(
+      msg,
+      callback
+    );
   }
 
   executeScript(func: () => void) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const id = tabs[0].id;
-      if (id == null) return;
-
+      const id = tabs?.[0]?.id;
+      if (id == null || id === undefined) return;
       chrome.scripting.executeScript({
         target: { tabId: id },
         func
