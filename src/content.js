@@ -1,49 +1,36 @@
 var myPort = chrome.runtime.connect({ name: 'port-from-cs' });
-var roomId;
-
-document.querySelector('video').addEventListener('pause', () => updateVideoFirebase('pause'));
-
-document.querySelector('video').addEventListener('play', () => updateVideoFirebase('play'));
-
-document.querySelector('video').addEventListener('timeupdate', () => updateVideoFirebase('timeupdate'));
+var roomData;
 
 const updateVideoFirebase = (command) => {
   const data = {
-    roomId,
+    roomId: roomData?.roomId,
     time: document.querySelector('video').currentTime
   };
 
-  roomId && myPort.postMessage({ command, data });
+  roomData?.roomId && myPort.postMessage({ command, data });
 }
 
-myPort.onMessage.addListener((msg) => {
-  if (msg.command === 'updateVideo') {
-    document.querySelector('video').currentTime = msg.data.time;
-    if (msg.data?.pause) {
-      document.querySelector('video')?.pause();
-    } else {
-      document.querySelector('video')?.play();
-    }
-  } else if (msg.command === 'createdRoom') {
-    const bodyDialog = document.querySelector('dialog .body');
-    const h2 = document.createElement('h2');
-    roomId = msg.data.newRoom.roomId;
-    h2.innerHTML = 'Codigo da sua sala: ' + roomId;
-    bodyDialog.appendChild(h2);
-    entryRoom();
-  }
-});
+const removeVideoControl = () => {
+  document.querySelector('video').controls = false;
+  const containerControl = document.querySelector('.ytp-chrome-bottom');
+  containerControl.querySelector('.ytp-left-controls button').style.display = 'none';
+  containerControl.querySelector('.ytp-left-controls a').style.display = 'none';
+  document.querySelector('video').style. pointerEvents = 'none';
+}
 
 const createNewRoom = () => {
   var time = document.querySelector('video').currentTime;
   myPort.postMessage({ command: 'createRoom', data: { link: window.location.href, time } })
 }
 
-const entryRoom = () => {
+const entryRoom = (isCreatedRoom = false) => {
   const inputRoomId = document.getElementById('inputRoomId');
 
-  myPort.postMessage({ command: 'entryRoom', data: { roomId: roomId || inputRoomId.value } })
-  toogleDialog(false);
+  myPort.postMessage({ command: 'entryRoom', data: { roomId: roomData?.roomId || inputRoomId.value } })
+  if (!isCreatedRoom) {
+    toogleDialog(false)
+    removeVideoControl();
+  }
 }
 
 const createDialog = (title) => {
@@ -86,7 +73,7 @@ const createDialog = (title) => {
   const btnEntryRoom = document.createElement('button');
   btnEntryRoom.classList.add(`btn`, 'green');
   btnEntryRoom.innerHTML = 'Entrar na Sala';
-  btnEntryRoom.addEventListener('click', entryRoom)
+  btnEntryRoom.addEventListener('click', () => entryRoom(false));
 
   // Add Element in Header
   header.appendChild(h2);
@@ -155,6 +142,37 @@ window.addEventListener('load', () => {
       createSessionInfoRoom()
       clearInterval(interval);
     }
-  }, 500)
+  }, 150)
 })
 
+document.querySelector('video').addEventListener('pause', () => updateVideoFirebase('pause'));
+
+document.querySelector('video').addEventListener('play', () => updateVideoFirebase('play'));
+
+document.querySelector('video').addEventListener('timeupdate', () => document.querySelector('video').paused && updateVideoFirebase('timeupdate'));
+
+myPort.onMessage.addListener((msg) => {
+
+  switch (msg.command) {
+    case 'updateVideo':
+      document.querySelector('video').currentTime = msg.data.time;
+      if (msg.data?.pause) {
+        document.querySelector('video')?.pause();
+      } else {
+        document.querySelector('video')?.play();
+      }
+      break;
+    case 'createdRoom':
+      const bodyDialog = document.querySelector('dialog .body');
+      const h2 = document.createElement('h2');
+      roomData = msg.data.roomData;
+      h2.innerHTML = 'Codigo da sua sala: ' + roomData.roomId;
+      h2.style.marginTop = '1rem';
+      bodyDialog.appendChild(h2);
+
+      entryRoom(true);
+      break
+    default:
+      break;
+  }
+});

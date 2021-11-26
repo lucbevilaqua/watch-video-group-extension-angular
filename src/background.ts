@@ -17,34 +17,44 @@ const validShowExtensionInPage = () => {
 chrome.runtime.onInstalled.addListener(validShowExtensionInPage);
 
 const firebaseService = new FirebaseService();
+const admId = (Math.random() + 1).toString(36).substring(7);
+let roomData: any = null;
+
+const isAdmin = () => admId && roomData.admId;
+
 // Mensagens enviadas do content.js
 const messagesFromContentAppListener = (msg: DOMMessage) => {
 
   switch (msg.command) {
     case 'pause':
-      firebaseService.updateRoom(msg.data.roomId, { roomId: msg.data.roomId, time: msg.data.time, pause: true });
+      isAdmin() && firebaseService.updateRoom(msg.data.roomId, { time: msg.data.time, pause: true });
       break;
     case 'play':
-        firebaseService.updateRoom(msg.data.roomId, { roomId: msg.data.roomId, time: msg.data.time, pause: false });
+      isAdmin() && firebaseService.updateRoom(msg.data.roomId, { time: msg.data.time, pause: false });
       break;
     case 'timeupdate':
-        firebaseService.updateRoom(msg.data.roomId, { roomId: msg.data.roomId, time: msg.data.time });
+      if (roomData.time !== msg.data.time) {
+        isAdmin() && firebaseService.updateRoom(msg.data.roomId, { time: msg.data.time });
+      }
       break;
     case 'createRoom':
       const roomId = (Math.random() + 1).toString(36).substring(7);
       const newRoom = {
         roomId,
+        admId,
         link: msg.data.link,
         pause: true,
         time: msg.data.time
       }
       firebaseService.createRoom(roomId, newRoom);
+      roomData = newRoom;
 
-      portFromContent.postMessage({ command: 'createdRoom', data: { newRoom } });
+      portFromContent.postMessage({ command: 'createdRoom', data: { roomData } });
       break;
     case 'entryRoom':
       firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
-        const data = snapshot.val();
+        roomData = snapshot.val();
+        const data = roomData;
         portFromContent.postMessage({ command: 'updateVideo', data });
       });
       break;

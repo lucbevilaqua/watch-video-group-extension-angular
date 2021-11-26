@@ -89,6 +89,7 @@
     input {
       margin-left: var(--ytd-margin-4x);
       border: none;
+      width: 100%;
       overflow: hidden;
       white-space: nowrap;
       background-color: rgba(0,0,0,0);
@@ -108,6 +109,7 @@
     border-top: 1px solid var(--yt-spec-text-primary);
 
     button {
+      cursor: pointer;
       margin-left: 1rem;
       border: none;
       border-radius: 2px;
