@@ -1,12 +1,24 @@
 var myPort = chrome.runtime.connect({ name: 'port-from-cs' });
 var roomId;
 
-document.querySelector('video').addEventListener('pause', () => roomId && myPort.postMessage({ command: 'pause', data: { roomId } }));
+document.querySelector('video').addEventListener('pause', () => updateVideoFirebase('pause'));
 
-document.querySelector('video').addEventListener('play', () => roomId && myPort.postMessage({ command: 'play', data: { roomId } }));
+document.querySelector('video').addEventListener('play', () => updateVideoFirebase('play'));
+
+document.querySelector('video').addEventListener('timeupdate', () => updateVideoFirebase('timeupdate'));
+
+const updateVideoFirebase = (command) => {
+  const data = {
+    roomId,
+    time: document.querySelector('video').currentTime
+  };
+
+  roomId && myPort.postMessage({ command, data });
+}
 
 myPort.onMessage.addListener((msg) => {
   if (msg.command === 'updateVideo') {
+    document.querySelector('video').currentTime = msg.data.time;
     if (msg.data?.pause) {
       document.querySelector('video')?.pause();
     } else {
@@ -23,7 +35,8 @@ myPort.onMessage.addListener((msg) => {
 });
 
 const createNewRoom = () => {
-  myPort.postMessage({ command: 'createRoom', data: { link: window.location.href } })
+  var time = document.querySelector('video').currentTime;
+  myPort.postMessage({ command: 'createRoom', data: { link: window.location.href, time } })
 }
 
 const entryRoom = () => {
