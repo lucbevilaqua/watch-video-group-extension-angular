@@ -1,7 +1,8 @@
 {
-  "name": "angular-chrome-extension",
+  "name": "Watch-Video-Group",
   "version": "1.0",
-  "description": "construindo uma extensão com angular",
+  "author": "Lucas Bevilaqua Araujo de Oliveira",
+  "description": "Extenção para assistir videos do youtube em grupo",
   "manifest_version": 3,
   "permissions": [
     "activeTab",
@@ -22,12 +23,17 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["content.js"],
+      "css": ["styles.css"],
       "run_at": "document_end"
     }
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "web_accessible_resources": [{
+    "resources": ["assets/icons/groups_white_24dp.svg"],
+    "matches": ["<all_urls>"]
+  }],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self' "
   }

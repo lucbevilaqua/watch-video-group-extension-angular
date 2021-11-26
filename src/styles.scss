@@ -1,1 +1,138 @@
 /* You can add global styles to this file, and also import other style files */
+.container-icon {
+  margin-left: 8px;
+  align-items: center;
+  max-width: 150px;
+}
+
+.img-icon {
+  line-height: 1;
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  margin: 0 1rem 0 0;
+  padding: 0 0 8px 0;
+  vertical-align: middle;
+  color: inherit;
+  outline: none;
+  background: none;
+  border: none;
+  line-height: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.text-icon {
+  color: #fff;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: .5px;
+}
+
+.dialog {
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  width: 518px;
+  height: fit-content;
+  background: var(--paper-dialog-background-color, var(--primary-background-color));
+  color: var(--paper-dialog-color, var(--primary-text-color));
+  font-family: var(--paper-font-body1_-_font-family);
+  -webkit-font-smoothing: var(--paper-font-body1_-_-webkit-font-smoothing);
+  font-size: var(--paper-font-body1_-_font-size);
+  font-weight: var(--paper-font-body1_-_font-weight);
+  line-height: var(--paper-font-body1_-_line-height);
+  box-shadow: 0 16px 24px 2px rgb(0 0 0 / 14%), 0 6px 30px 5px rgb(0 0 0 / 12%), 0 8px 10px -5px rgb(0 0 0 / 40%);
+
+  .header {
+    color: var(--yt-spec-text-primary);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    .close {
+      color: var(--yt-spec-text-primary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+  }
+
+  h2 {
+    color: var(--yt-spec-text-primary);
+    font-size: var(--ytd-subheadline_-_font-size);
+    font-weight: var(--ytd-subheadline_-_font-weight);
+    line-height: var(--ytd-subheadline_-_line-height);
+    letter-spacing: var(--ytd-subheadline_-_letter-spacing);
+  }
+
+  .container-input {
+    justify-content: space-between;
+    border: 1px solid var(--yt-spec-10-percent-layer);
+    background-color: var(--yt-spec-general-background-a);
+    border-radius: 2px;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    height: 30px;
+    input {
+      margin-left: var(--ytd-margin-4x);
+      border: none;
+      overflow: hidden;
+      white-space: nowrap;
+      background-color: rgba(0,0,0,0);
+      color: var(--yt-spec-text-primary);
+      font-size: 15px;
+      outline: none;
+    }
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 1rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--yt-spec-text-primary);
+
+    button {
+      margin-left: 1rem;
+      border: none;
+      border-radius: 2px;
+      color: var(--yt-spec-static-brand-white);
+      padding: var(--yt-button-padding);
+      margin: auto var(--ytd-subscribe-button-margin,4px);
+      white-space: nowrap;
+      font-size: 1em;
+      font-weight: var(--ytd-tab-system_-_font-weight);
+      letter-spacing: var(--ytd-tab-system_-_letter-spacing);
+      text-transform: var(--ytd-tab-system_-_text-transform);
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+
+      &.cornflowerblue {
+        background-color: cornflowerblue;
+      }
+
+      &.green {
+        background-color: green;
+      }
+    }
+  }
+}
