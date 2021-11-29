@@ -1,5 +1,5 @@
 var myPort = chrome.runtime.connect({ name: 'port-from-cs' });
-var roomData;
+var roomData = { };
 var video;
 var containerIcons;
 var extensionId;
@@ -30,8 +30,10 @@ const createNewRoom = () => {
 
 const entryRoom = (isCreatedRoom = false) => {
   const inputRoomId = document.getElementById('inputRoomId');
+  const roomId = roomData?.roomId ?? inputRoomId.value;
+  localStorage.setItem('roomId', roomId);
 
-  myPort.postMessage({ command: 'entryRoom', data: { roomId: roomData?.roomId || inputRoomId.value } });
+  myPort.postMessage({ command: 'entryRoom', data: { roomId } });
   if (!isCreatedRoom) {
     toogleDialog(false);
     // removeVideoControl();
@@ -121,21 +123,15 @@ const createSessionInfoRoom = () => {
   imgIcon.classList.add('img-icon');
   imgIcon.setAttribute('src', `chrome-extension://${extensionId}/assets/icons/groups_white_24dp.svg`);
 
-  // Create Title of Icon
-  const spanIcon = document.createElement('span');
-  spanIcon.setAttribute('id', 'btnOpenDialog');
-  spanIcon.classList.add('text-icon');
-  spanIcon.innerHTML = 'Watch Group';
-
   // Clone tag a of youtube
-  const cloneIcon = document.createElement('a');
-  cloneIcon.classList.add('container-icon', 'yt-simple-endpoint', 'style-scope', 'ytd-button-renderer', 'container-icon');
-  cloneIcon.setAttribute('title', 'Watch Group');
-  cloneIcon.addEventListener('click', () => toogleDialog(true));
+  const iconWatchGroup = document.createElement('a');
+  iconWatchGroup.setAttribute('id', 'btnOpenDialog');
+  iconWatchGroup.classList.add('container-icon', 'yt-simple-endpoint', 'style-scope', 'ytd-button-renderer', 'container-icon');
+  iconWatchGroup.setAttribute('title', 'Watch Group');
+  iconWatchGroup.addEventListener('click', () => toogleDialog(true));
 
-  cloneIcon.appendChild(imgIcon);
-  cloneIcon.appendChild(spanIcon);
-  containerIcons.appendChild(cloneIcon);
+  iconWatchGroup.appendChild(imgIcon);
+  containerIcons.insertBefore(iconWatchGroup, containerIcons.lastElementChild);
 
   const dialog = createDialog('Assitir video com o grupo');
   document.body.appendChild(dialog);
@@ -151,11 +147,14 @@ const onLoadPage = () => {
   myPort.postMessage({ command: 'getExtensionId' });
 
   const intervalSessionInfo = setInterval(() => {
-    // Get Container Icons
-    containerIcons = document.querySelector('#top-level-buttons-computed ytd-button-renderer')?.parentElement;
+    // Get Header Container
+    containerIcons = document.querySelector('#buttons ytd-topbar-menu-button-renderer')?.parentElement;
 
-    if (extensionId && !!containerIcons && window.location.href.includes('www.youtube.com/watch')) {
-      createSessionInfoRoom()
+    if (extensionId && !!containerIcons) {
+      createSessionInfoRoom();
+      roomData.roomId = localStorage.getItem('roomId') === 'undefined' || !localStorage.getItem('roomId') ? null : localStorage.getItem('roomId');
+      console.log('id da sala = ' + roomData.roomId)
+      roomData.roomId && entryRoom();
       clearInterval(intervalSessionInfo);
     }
   }, 150)
@@ -176,6 +175,10 @@ window.addEventListener('load', () => {
 myPort.onMessage.addListener((msg) => {
   switch (msg.command) {
     case 'updateVideo':
+      console.log(msg)
+      if (window.location.href !== msg.data?.link) {
+        window.location.href =  msg.data?.link;
+      }
       if (msg.data?.pause !== video.paused) {
         msg.data?.pause ? video?.pause() : video?.play();
       }
