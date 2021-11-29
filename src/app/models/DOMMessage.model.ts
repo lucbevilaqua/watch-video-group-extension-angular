@@ -1,4 +1,4 @@
 export type DOMMessage = {
-  command: 'pause' | 'play' | 'createRoom' | 'entryRoom' | 'timeupdate';
+  command: 'updateStatusVideo' | 'createRoom' | 'entryRoom' | 'timeupdate' | 'getExtensionId';
   data?: any;
 }

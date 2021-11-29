@@ -1,27 +1,21 @@
 {
-  "name": "Watch-Video-Group",
-  "version": "1.0",
+  "name": "Watch Video Group",
+  "version": "1.1",
   "author": "Lucas Bevilaqua Araujo de Oliveira",
-  "description": "Extenção para assistir videos do youtube em grupo",
+  "description": "Extensão para assistir videos do youtube em grupo",
   "manifest_version": 3,
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "storage",
-    "webNavigation",
-    "scripting"
-  ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*",
-    "<all_urls>"
-  ],
-  "action": {
-    "default_popup": "index.html"
+  "icons": {
+    "16": "assets/icons/icon-extension-16.png",
+    "48": "assets/icons/icon-extension-48.png",
+    "128": "assets/icons/icon-extension-128.png"
   },
+  "host_permissions": [
+    "http://www.youtube.com/*",
+    "https://www.youtube.com/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["http://www.youtube.com/*", "https://www.youtube.com/*"],
       "js": ["content.js"],
       "css": ["styles.css"],
       "run_at": "document_end"
