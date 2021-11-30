@@ -31,16 +31,27 @@ const createNewRoom = () => {
 const entryRoom = (isCreatedRoom = false) => {
   const inputRoomId = document.getElementById('inputRoomId');
   const roomId = roomData?.roomId ?? inputRoomId.value;
-  localStorage.setItem('roomId', roomId);
+  if (roomId) {
+    localStorage.setItem('roomId', roomId);
 
-  myPort.postMessage({ command: 'entryRoom', data: { roomId } });
-  if (!isCreatedRoom) {
-    toogleDialog(false);
-    // removeVideoControl();
-  } else {
-    // Remove o botão criar sala
+    myPort.postMessage({ command: 'entryRoom', data: { roomId } });
+    document.querySelector('dialog #btnLeaveRoom').style.display = 'flex';
     document.querySelector('dialog #btnCreateRoom').parentNode.removeChild(document.querySelector('dialog #btnCreateRoom'));
+    document.querySelector('dialog #btnEntryRoom').parentNode.removeChild(document.querySelector('dialog #btnEntryRoom'));
+
+    if (!isCreatedRoom) {
+      toogleDialog(false);
+      document.getElementById('inputRoomId').value = roomId;
+      // removeVideoControl();
+    }
+  } else {
+    leaveRoom();
   }
+}
+
+const leaveRoom = () => {
+  localStorage.removeItem('roomId');
+  window.location.reload();
 }
 
 const createDialog = (title) => {
@@ -75,6 +86,13 @@ const createDialog = (title) => {
   const footer = document.createElement('footer');
   footer.classList.add(`footer`);
 
+  const btnLeaveRoom = document.createElement('button');
+  btnLeaveRoom.setAttribute('id', 'btnLeaveRoom');
+  btnLeaveRoom.classList.add(`btn`, 'red');
+  btnLeaveRoom.style.display = 'none';
+  btnLeaveRoom.innerHTML = 'Sair da sala';
+  btnLeaveRoom.addEventListener('click', leaveRoom);
+
   const btnCreateRoom = document.createElement('button');
   btnCreateRoom.classList.add(`btn`, 'cornflowerblue');
   btnCreateRoom.setAttribute('id', 'btnCreateRoom');
@@ -83,6 +101,7 @@ const createDialog = (title) => {
 
   const btnEntryRoom = document.createElement('button');
   btnEntryRoom.classList.add(`btn`, 'green');
+  btnEntryRoom.setAttribute('id', 'btnEntryRoom');
   btnEntryRoom.innerHTML = 'Entrar na Sala';
   btnEntryRoom.addEventListener('click', () => entryRoom(false));
 
@@ -95,6 +114,7 @@ const createDialog = (title) => {
   body.appendChild(containerInput);
 
   // Add Elements in Footer
+  footer.appendChild(btnLeaveRoom);
   footer.appendChild(btnCreateRoom);
   footer.appendChild(btnEntryRoom);
 
@@ -153,8 +173,7 @@ const onLoadPage = () => {
     if (extensionId && !!containerIcons) {
       createSessionInfoRoom();
       roomData.roomId = localStorage.getItem('roomId') === 'undefined' || !localStorage.getItem('roomId') ? null : localStorage.getItem('roomId');
-      console.log('id da sala = ' + roomData.roomId)
-      roomData.roomId && entryRoom();
+      roomData.roomId && entryRoom(false);
       clearInterval(intervalSessionInfo);
     }
   }, 150)
@@ -175,7 +194,6 @@ window.addEventListener('load', () => {
 myPort.onMessage.addListener((msg) => {
   switch (msg.command) {
     case 'updateVideo':
-      console.log(msg)
       if (window.location.href !== msg.data?.link) {
         window.location.href =  msg.data?.link;
       }

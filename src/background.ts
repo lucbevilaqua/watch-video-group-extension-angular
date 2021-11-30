@@ -3,6 +3,7 @@ import { FirebaseService } from "./app/services/firebase.service";
 
 const firebaseService = new FirebaseService();
 const admId = (Math.random() + 1).toString(36).substring(7);
+let listener: any;
 let roomData: any = null;
 
 const isAdmin = () => admId && roomData.admId;
@@ -32,8 +33,7 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       portFromContent.postMessage({ command: 'createdRoom', data: { roomData } });
       break;
     case 'entryRoom':
-      console.log(msg)
-      firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
+      listener = firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
         roomData = snapshot.val();
         const data = roomData;
 
