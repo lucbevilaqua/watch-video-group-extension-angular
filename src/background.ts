@@ -32,7 +32,7 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
 
       portFromContent.postMessage({ command: 'createdRoom', data: { roomData } });
       break;
-    case 'entryRoom':
+    case 'enterRoom':
       listener = firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
         roomData = snapshot.val();
         const data = roomData;
