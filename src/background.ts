@@ -2,11 +2,9 @@ import { DOMMessage } from "./app/models/DOMMessage.model";
 import { FirebaseService } from "./app/services/firebase.service";
 
 const firebaseService = new FirebaseService();
-const admId = (Math.random() + 1).toString(36).substring(7);
 let listener: any;
 let roomData: any = null;
 
-const isAdmin = () => admId && roomData.admId;
 
 // Mensagens enviadas do content.js
 const messagesFromContentAppListener = (msg: DOMMessage) => {
@@ -22,10 +20,9 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       const roomId = (Math.random() + 1).toString(36).substring(7);
       const newRoom = {
         roomId,
-        admId,
-        link: msg.data.link,
         pause: true,
-        time: msg.data.time
+        isEnd: false,
+        ...msg.data
       }
       firebaseService.createRoom(roomId, newRoom);
       roomData = newRoom;

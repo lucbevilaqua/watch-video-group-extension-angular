@@ -1,6 +1,6 @@
 {
   "name": "Watch Video Group",
-  "version": "1.2",
+  "version": "1.3.0",
   "author": "Lucas Bevilaqua Araujo de Oliveira",
   "description": "Extensão para assistir videos do youtube em grupo",
   "manifest_version": 3,

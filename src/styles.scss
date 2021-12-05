@@ -36,6 +36,15 @@
   letter-spacing: .5px;
 }
 
+.text {
+  font-size: var(--ytd-user-comment_-_font-size);
+  font-weight: var(--ytd-user-comment_-_font-weight);
+  line-height: var(--ytd-user-comment_-_line-height);
+  letter-spacing: var(--ytd-user-comment_-_letter-spacing);
+  font-family: var(--ytd-user-comment_-_font-family);
+  color: var(--ytd-user-comment_-_color,var(--yt-spec-text-secondary));
+}
+
 .dialog {
   z-index: 9999;
   top: 0;
@@ -96,6 +105,16 @@
       color: var(--yt-spec-text-primary);
       font-size: 15px;
       outline: none;
+    }
+  }
+
+  .checkbox-container {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    .checkbox {
+      height: 20px !important;
+      width: 20px !important;
     }
   }
 
