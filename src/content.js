@@ -1,5 +1,5 @@
 const myPort = chrome.runtime.connect({ name: 'port-from-cs' });
-const admId = (Math.random() + 1).toString(36).substring(7);
+var admId = (Math.random() + 1).toString(36).substring(7);
 var roomData = { };
 var video;
 var containerIcons;
@@ -117,10 +117,12 @@ const enterRoom = (isCreatedRoom = false) => {
     removeElement('dialog #btnCreateRoom');
     removeElement('dialog #btnEnterRoom');
     removeElement('dialog #checkboxContainer');
+    localStorage.removeItem('admId');
 
     if (!isCreatedRoom) {
       toogleDialog(false);
       removeElement('dialog #inputRoomId');
+      localStorage.setItem('admId', admId);
     }
   } else {
     leaveRoom();
@@ -129,6 +131,7 @@ const enterRoom = (isCreatedRoom = false) => {
 
 const leaveRoom = () => {
   localStorage.removeItem('roomId');
+  localStorage.removeItem('admId');
   window.location.reload();
 }
 
@@ -237,6 +240,7 @@ const createListeners = () => {
 
 const onLoadPage = () => {
   myPort.postMessage({ command: 'getExtensionId' });
+  admId = localStorage.getItem('admId') ?? admId;
 
   const intervalSessionInfo = setInterval(() => {
     // Get Header Container
