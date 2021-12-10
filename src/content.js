@@ -212,8 +212,9 @@ const toogleDialog = (isOpen) => {
 const createSessionInfoRoom = () => {
   // Create icon
   const imgIcon = document.createElement('img');
+  const isDarkTheme = !!document.querySelector('html').attributes.dark;
   imgIcon.classList.add('img-icon');
-  imgIcon.setAttribute('src', `chrome-extension://${extensionId}/assets/icons/groups_white_24dp.svg`);
+  imgIcon.setAttribute('src', `chrome-extension://${extensionId}/assets/icons/${isDarkTheme ? 'groups_white_24dp' : 'groups_black_24dp'}.svg`);
 
   // Clone tag a of youtube
   const iconWatchGroup = document.createElement('a');
