@@ -7,7 +7,7 @@ export const environment = {
   firebase: {
     apiKey: "AIzaSyBop1-nlT4Un7lznadDUPGem8jk3rJvn7Y",
     authDomain: "watch-video-group.firebaseapp.com",
-    databaseURL: "https://watch-video-group-default-rtdb.firebaseio.com/",
+    databaseURL: "https://watch-video-group-default-rtdb.firebaseio.com",
     projectId: "watch-video-group",
     storageBucket: "watch-video-group.appspot.com",
     messagingSenderId: "736680584207",

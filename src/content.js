@@ -48,7 +48,7 @@ const removeVideoControl = () => {
   video.style. pointerEvents = 'none';
 }
 
-const removeElement = (querySelector) => document.querySelector(querySelector).parentNode.removeChild(document.querySelector(querySelector));
+const removeElement = (querySelector) => document.querySelector(querySelector)?.parentNode?.removeChild(document.querySelector(querySelector));
 
 const createButton = (id, label, classList, onClick) => {
   const button = document.createElement('button');
@@ -99,8 +99,8 @@ const createCheckbox = (label) => {
 }
 
 const createNewRoom = () => {
-  video.pause();
-  const time = video.currentTime;
+  video?.pause();
+  const time = video?.currentTime ?? 0;
   const blockControls = document.querySelector('dialog #checkbox')?.classList?.contains('checked') ?? false;
   myPort.postMessage({ command: 'createRoom', data: { link: window.location.href, time, blockControls, admId } })
 }
@@ -117,6 +117,7 @@ const enterRoom = (isCreatedRoom = false) => {
     removeElement('dialog #btnCreateRoom');
     removeElement('dialog #btnEnterRoom');
     removeElement('dialog #checkboxContainer');
+    removeElement('dialog .checkbox-container');
     localStorage.removeItem('admId');
 
     if (!isCreatedRoom) {
@@ -130,14 +131,20 @@ const enterRoom = (isCreatedRoom = false) => {
 }
 
 const leaveRoom = () => {
-  localStorage.removeItem('roomId');
-  localStorage.removeItem('admId');
-  window.location.reload();
+  try {
+    localStorage.removeItem('roomId');
+    localStorage.removeItem('admId');
+    isAdmin() && roomData && myPort.postMessage({ command: 'removeRoom', data: roomData });
+    window.location.reload();
+  } catch (error) {
+    window.location.reload();
+  }
 }
 
-const createDialog = (title) => {
+const createDialog = (title, id) => {
   // Create dialog
   const dialog = document.createElement('dialog');
+  dialog.setAttribute('id', id);
   dialog.classList.add(`dialog`);
 
   // Elements in Header
@@ -226,7 +233,7 @@ const createSessionInfoRoom = () => {
   iconWatchGroup.appendChild(imgIcon);
   containerIcons.insertBefore(iconWatchGroup, containerIcons.lastElementChild);
 
-  const dialog = createDialog('Assitir video com o grupo');
+  const dialog = createDialog('Assitir video com o grupo', 'dialogWatchGroup');
   document.body.appendChild(dialog);
 }
 
@@ -236,6 +243,11 @@ const createListeners = () => {
   video.addEventListener('timeupdate', () => {
     video.paused && updateVideoFirebase();
     setEndVideoFirebase();
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    leaveRoom();
+    return;
   });
 }
 
@@ -259,7 +271,7 @@ const onLoadPage = () => {
       roomData.roomId = localStorage.getItem('roomId') === 'undefined' || !localStorage.getItem('roomId') ? null : localStorage.getItem('roomId');
       roomData.roomId && enterRoom(false);
       roomData.isEnd && updateVideoFirebase();
-      createListeners();
+      createListenerTheme();
       clearInterval(intervalVideo);
     }
   }, 150)
@@ -295,6 +307,21 @@ const createdRoomListener = (msg) => {
 
   enterRoom(true);
 }
+const createListenerTheme = () => {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes') {
+        removeElement('#btnOpenDialog');
+        removeElement('#dialogWatchGroup');
+        createSessionInfoRoom();
+      }
+    });
+  });
+
+  observer.observe(document.querySelector('html'), {
+    attributes: true //configure it to listen to attribute changes
+  });
+}
 
 window.addEventListener('load', () => {
   onLoadPage();
@@ -303,7 +330,11 @@ window.addEventListener('load', () => {
 myPort.onMessage.addListener((msg) => {
   switch (msg.command) {
     case 'updateVideo':
-      updateVideoListener(msg);
+      if(msg.data) {
+        updateVideoListener(msg);
+      } else {
+        leaveRoom();
+      }
       break;
     case 'createdRoom':
       createdRoomListener(msg);

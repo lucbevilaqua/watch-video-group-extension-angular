@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, update, set } from "firebase/database";
+import { getDatabase, ref, onValue, update, set, remove } from "firebase/database";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,12 @@ export class FirebaseService {
     const roomRef = this.getRef(roomId);
 
     set(roomRef, room);
+  }
+
+  removeRoom(roomId: string) {
+    const roomRef = this.getRef(roomId);
+
+    remove(roomRef);
   }
 
   observableRoom(roomId: string, callback: (snapshot: any) => void) {

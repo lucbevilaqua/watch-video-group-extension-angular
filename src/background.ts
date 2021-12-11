@@ -16,12 +16,15 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
     case 'updateStatusVideo':
       firebaseService.updateRoom(msg.data.roomId, msg.data);
       break;
+    case 'removeRoom':
+      firebaseService.removeRoom(msg.data.roomId);
+      break;
     case 'createRoom':
       const roomId = (Math.random() + 1).toString(36).substring(7);
       const newRoom = {
         roomId,
         pause: true,
-        isEnd: false,
+        isEnd: !!!msg.data.time,
         ...msg.data
       }
       firebaseService.createRoom(roomId, newRoom);
@@ -30,12 +33,16 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       portFromContent.postMessage({ command: 'createdRoom', data: { roomData } });
       break;
     case 'enterRoom':
-      listener = firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
-        roomData = snapshot.val();
-        const data = roomData;
+      try {
+        listener = firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
+          roomData = snapshot.val();
+          const data = roomData;
 
-        portFromContent.postMessage({ command: 'updateVideo', data });
-      });
+          portFromContent.postMessage({ command: 'updateVideo', data });
+        });
+      } catch (error) {
+        portFromContent.postMessage({ command: 'updateVideo', data: null });
+      }
       break;
 
     default:
