@@ -2,7 +2,6 @@ import { DOMMessage } from "./app/models/DOMMessage.model";
 import { FirebaseService } from "./app/services/firebase.service";
 
 const firebaseService = new FirebaseService();
-let listener: any;
 let roomData: any = null;
 
 
@@ -24,7 +23,7 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       const newRoom = {
         roomId,
         pause: true,
-        isEnd: !!!msg.data.time,
+        isEnd: false,
         ...msg.data
       }
       firebaseService.createRoom(roomId, newRoom);
@@ -34,7 +33,7 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       break;
     case 'enterRoom':
       try {
-        listener = firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
+        firebaseService.observableRoom(msg.data.roomId, (snapshot) => {
           roomData = snapshot.val();
           const data = roomData;
 

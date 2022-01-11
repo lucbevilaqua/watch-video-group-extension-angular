@@ -10,6 +10,15 @@ const isAdmin = () => admId === roomData.admId;
 const updateVideoFirebase = () => {
   const data = {
     roomId: roomData?.roomId,
+    pause: video.paused
+  };
+
+  roomData?.roomId && myPort.postMessage({ command: 'updateStatusVideo', data });
+}
+
+const updateTimeVideoFirebase = () => {
+  const data = {
+    roomId: roomData?.roomId,
     pause: video.paused,
     time: video.currentTime
   };
@@ -27,7 +36,6 @@ const setEndVideoFirebase = () => {
   } else if (roomData?.isEnd && video?.currentTime <= (video?.duration - 60)) {
     data.isEnd = false;
   }
-
   (roomData?.roomId && data.isEnd) && myPort.postMessage({ command: 'updateStatusVideo', data });
 }
 
@@ -241,12 +249,18 @@ const createListeners = () => {
   video.addEventListener('pause', () => updateVideoFirebase());
   video.addEventListener('play', () => updateVideoFirebase());
   video.addEventListener('timeupdate', () => {
-    video.paused && updateVideoFirebase();
+    video.paused && updateTimeVideoFirebase();
     setEndVideoFirebase();
   });
 
+  const intervalVideoTime = setInterval(() => {
+    if (roomData.roomId) {
+      updateTimeVideoFirebase()
+    }
+  }, 10000);
+
   window.addEventListener('beforeunload', function (e) {
-    leaveRoom();
+    roomData.isEnd && leaveRoom();
     return;
   });
 }
@@ -271,6 +285,7 @@ const onLoadPage = () => {
       roomData.roomId = localStorage.getItem('roomId') === 'undefined' || !localStorage.getItem('roomId') ? null : localStorage.getItem('roomId');
       roomData.roomId && enterRoom(false);
       roomData.isEnd && updateVideoFirebase();
+      createListeners();
       createListenerTheme();
       clearInterval(intervalVideo);
     }
@@ -307,6 +322,7 @@ const createdRoomListener = (msg) => {
 
   enterRoom(true);
 }
+
 const createListenerTheme = () => {
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
