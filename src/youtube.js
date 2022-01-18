@@ -172,7 +172,6 @@ const createListenerTheme = () => {
       if (mutation.type === 'attributes') {
         removeElement('#btnOpenDialog');
         removeElement('#dialogWatchGroup');
-        createSessionInfoRoom();
       }
     });
   });
@@ -186,6 +185,7 @@ const createListenerTheme = () => {
 const onLoadPage = () => {
   myPort.postMessage({ command: 'getExtensionId' });
   myPort.postMessage({ command: 'getDataInStorage', data: { key: 'admId' } });
+  createListenerTheme();
 }
 
 window.addEventListener('load', () => {
@@ -208,7 +208,6 @@ const intervalVideo = setInterval(() => {
     video = document.querySelector('video');
     myPort.postMessage({ command: 'getDataInStorage', data: { key: 'roomId' } });
     createListeners();
-    createListenerTheme();
   }
 }, 1500)
 
