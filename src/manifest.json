@@ -1,6 +1,6 @@
 {
   "name": "Watch Video Group",
-  "version": "1.4.2",
+  "version": "1.5.2",
   "author": "Lucas Bevilaqua Araujo de Oliveira",
   "description": "Extensão para assistir videos do youtube em grupo",
   "manifest_version": 3,
@@ -9,10 +9,13 @@
     "48": "assets/icons/icon-extension-48.png",
     "128": "assets/icons/icon-extension-128.png"
   },
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
       "matches": ["http://www.youtube.com/*", "https://www.youtube.com/*"],
-      "js": ["content.js"],
+      "js": ["content.js", "utils.js", "youtube.js"],
       "css": ["styles.css"],
       "run_at": "document_end"
     }

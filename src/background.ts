@@ -12,6 +12,17 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
     case 'getExtensionId':
       portFromContent.postMessage({ command: 'setExtensionId', data: { id: chrome.runtime.id } });
       break;
+    case 'setDataInStorage':
+      chrome.storage.sync.set({ [msg.data.key]: msg.data.value });
+      break;
+    case 'removeDataInStorage':
+      chrome.storage.sync.remove(msg.data.key);
+      break;
+    case 'getDataInStorage':
+      chrome.storage.sync.get(msg.data.key, function(result) {
+        portFromContent.postMessage({ command: 'resultDataStorage', data: result  });
+      });
+      break;
     case 'updateStatusVideo':
       firebaseService.updateRoom(msg.data.roomId, msg.data);
       break;
@@ -22,8 +33,7 @@ const messagesFromContentAppListener = (msg: DOMMessage) => {
       const roomId = (Math.random() + 1).toString(36).substring(7);
       const newRoom = {
         roomId,
-        pause: true,
-        isEnd: false,
+        paused: true,
         ...msg.data
       }
       firebaseService.createRoom(roomId, newRoom);
